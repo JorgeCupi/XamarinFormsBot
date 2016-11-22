@@ -100,7 +100,7 @@ namespace BotFirst.ViewModel
         // For future commits we'll work with watermarks to receive only the latest message.
         public async void SendMessage()
         {
-            myChat.Add(myMessage);
+            myChat.Add("Me: "+ myMessage);
             // Posting an activity to Bot
             postResult = JsonConvert.DeserializeObject<PostResult>(await PostAsync(botUriChat, content));
             // if Bot succesfully received the message then it replies with an ID:
@@ -110,7 +110,7 @@ namespace BotFirst.ViewModel
                 GetResult getResult = JsonConvert.DeserializeObject<GetResult>(await chatClient.GetStringAsync(botUriChat));
 
                 // Just adding the last message from the whole list of activities
-                myChat.Add(getResult.activities[int.Parse(getResult.watermark) - 1].text);
+                myChat.Add("Bot: " + getResult.activities[int.Parse(getResult.watermark) - 1].text);
             }
             
         }
@@ -122,13 +122,13 @@ namespace BotFirst.ViewModel
         // watermarks and so on.
         public async void StartConversation()
         {
-            StringContent content = new StringContent("");
+            StringContent content = new StringContent("",Encoding.UTF8,"application/json");
             try
             {
                 string result = await PostAsync(botUriStartConversation, content);
                 messageRequest = JsonConvert.DeserializeObject<MessageRequest>(result);
                 botUriChat = String.Format(botUriChat, messageRequest.conversationId);
-                myChat.Add("Your bot is connected");
+                myChat.Add("Bot: I'm all set up!");
             }
             catch (Exception ex)
             {
