@@ -1,4 +1,6 @@
-﻿using System.Collections.ObjectModel;
+﻿// Most of the heavy lifting occurs here. Probably in a new release I'll wrap
+// and refactorize some code to have a clean library ready to share.
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Windows.Input;
@@ -49,6 +51,10 @@ namespace BotFirst.ViewModel
             get { return _myMessage; }
             set
             {
+                // Creating the JSON string that will be upload as an activity to the BOT
+                // For now it seems unnecesary to create a JSON object and then serialize it into a string
+                // but in the coming future this Activity Object can become more complex and have useful info to use
+                // in other parts of the project.
                 _myMessage = value;
                 activityToPost = new ActivityToPost
                 {
@@ -64,6 +70,8 @@ namespace BotFirst.ViewModel
         }
         #endregion
 
+        // Just instantiating the Uris, HTTP Clients and the Observable collection that 
+        // will hold the messages between the user and the Bot.
         public MainPageViewModel()
         {
             myChat = new ObservableCollection<string>();
@@ -72,8 +80,7 @@ namespace BotFirst.ViewModel
 
             botUriStartConversation = "https://directline.botframework.com/v3/directline/conversations/";
             botUriChat = "https://directline.botframework.com/v3/directline/conversations/{0}/activities";
-            botSecret = "00lpHMa5tIU.cwA.3jM.FU2X7eHnLTLhwti165wVHmjYfYqrxghzUKD991lG2HI";
-            //botSecret = "Your-Bot-Secret-Goes-Here";
+            botSecret = "Your-Bot-Secret-Goes-Here";
 
             chatClient = new HttpClient();
             startConversationClient = new HttpClient();
@@ -85,10 +92,16 @@ namespace BotFirst.ViewModel
 
         #region Commands
         public ICommand SendMessageCommand { get; set; }
+        // Once a conversation has been started we are able to send and receive messages from the Bot
+        // For this, we are just making a POST request to the BOT and if we receive a MessageID we're confirming
+        // the BOT received our message, so we can make a GET request and we'll get a list of all the activities 
+        // (chats) the Bot had with the current MessageID.
+        // Right now, everytime we make a GET request we'll receive all the conversation history. 
+        // For future commits we'll work with watermarks to receive only the latest message.
         public async void SendMessage()
         {
-            // Posting an activity to Bot
             myChat.Add(myMessage);
+            // Posting an activity to Bot
             postResult = JsonConvert.DeserializeObject<PostResult>(await PostAsync(botUriChat, content));
             // if Bot succesfully received the message then it replies with an ID:
             if (postResult !=null)
@@ -96,12 +109,17 @@ namespace BotFirst.ViewModel
                 // Polling the Bot's reply with a GET request
                 GetResult getResult = JsonConvert.DeserializeObject<GetResult>(await chatClient.GetStringAsync(botUriChat));
 
+                // Just adding the last message from the whole list of activities
                 myChat.Add(getResult.activities[int.Parse(getResult.watermark) - 1].text);
             }
             
         }
         #endregion
-        #region Own methods
+        #region Methods
+        // For the Bot to be able to chat, first it needs a MessageID which is granted by starting a conversation
+        // or recovering a MessageID from the past. In the meantime I'm creating a new conversation everytime the 
+        // App starts. This will improve with future commits by properly handling Tokens, saving MessageIDs, checking
+        // watermarks and so on.
         public async void StartConversation()
         {
             StringContent content = new StringContent("");
