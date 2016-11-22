@@ -16,11 +16,16 @@ namespace BotFirst.ViewModel
     class MainPageViewModel : INotifyPropertyChanged
     {
         #region Class properties
-        static HttpClient streamClient;
+        static HttpClient chatClient;
+        static HttpClient startConversationClient;
+        static PostResult postResult;
+        static ActivityToPost activityToPost;
         static string botUriStartConversation;
         static string botUriChat;
         static string botSecret;
+        static string activity;
         static MessageRequest messageRequest;
+        static StringContent content;
         #endregion
         #region Properties
         private ObservableCollection<string> _myChat;
@@ -45,6 +50,15 @@ namespace BotFirst.ViewModel
             set
             {
                 _myMessage = value;
+                activityToPost = new ActivityToPost
+                {
+                    type = "message",
+                    from = new User { id = "user1" },
+                    text = myMessage
+                };
+                activity = JsonConvert.SerializeObject(activityToPost);
+                content = new StringContent(activity, Encoding.UTF8, "application/json");
+
                 OnPropertyChanged("myMessage");
             }
         }
@@ -55,11 +69,16 @@ namespace BotFirst.ViewModel
             myChat = new ObservableCollection<string>();
             myChat.CollectionChanged += MyChat_CollectionChanged;
             SendMessageCommand = new Command(SendMessage);
-            
-            streamClient = new HttpClient();
+
             botUriStartConversation = "https://directline.botframework.com/v3/directline/conversations/";
             botUriChat = "https://directline.botframework.com/v3/directline/conversations/{0}/activities";
-            botSecret = "Bot-Secret-Goes-Here";
+            botSecret = "00lpHMa5tIU.cwA.3jM.FU2X7eHnLTLhwti165wVHmjYfYqrxghzUKD991lG2HI";
+            //botSecret = "Your-Bot-Secret-Goes-Here";
+
+            chatClient = new HttpClient();
+            startConversationClient = new HttpClient();
+            chatClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + botSecret);
+            startConversationClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + botSecret);
 
             StartConversation();
         }
@@ -68,16 +87,18 @@ namespace BotFirst.ViewModel
         public ICommand SendMessageCommand { get; set; }
         public async void SendMessage()
         {
-            // Interaction with Bots go here
-            ActivityToPost activityToPost = new ActivityToPost {
-                    type = "message",
-                    from = new User { id = "user1" },
-                    text = myMessage };
-            string activity = JsonConvert.SerializeObject(activityToPost);
-            StringContent content = new StringContent(activity);
-            botUriChat = String.Format(botUriChat, messageRequest.conversationId);
-            string result = await PostAsync(botUriChat, content);
-            myChat.Add(result);
+            // Posting an activity to Bot
+            myChat.Add(myMessage);
+            postResult = JsonConvert.DeserializeObject<PostResult>(await PostAsync(botUriChat, content));
+            // if Bot succesfully received the message then it replies with an ID:
+            if (postResult !=null)
+            {
+                // Polling the Bot's reply with a GET request
+                GetResult getResult = JsonConvert.DeserializeObject<GetResult>(await chatClient.GetStringAsync(botUriChat));
+
+                myChat.Add(getResult.activities[int.Parse(getResult.watermark) - 1].text);
+            }
+            
         }
         #endregion
         #region Own methods
@@ -88,13 +109,8 @@ namespace BotFirst.ViewModel
             {
                 string result = await PostAsync(botUriStartConversation, content);
                 messageRequest = JsonConvert.DeserializeObject<MessageRequest>(result);
+                botUriChat = String.Format(botUriChat, messageRequest.conversationId);
                 myChat.Add("Your bot is connected");
-
-                ////Open Stream to chat with Bot
-                //messageRequest.streamUrl = messageRequest.streamUrl.Replace("wss","https");
-                //HttpClient streamClient = new HttpClient();
-                //HttpResponseMessage resultStream = await streamClient.PostAsync(messageRequest.streamUrl,content);
-                //myChat.Add(resultStream.ToString());
             }
             catch (Exception ex)
             {
@@ -104,12 +120,9 @@ namespace BotFirst.ViewModel
 
         private static async Task<string> PostAsync(string uri, HttpContent content)
         {
-            HttpClient client = new HttpClient();
-            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + botSecret);
-
             try
             {
-                HttpResponseMessage response = await client.PostAsync(uri, content);
+                HttpResponseMessage response = await startConversationClient.PostAsync(uri, content);
 
                 Stream stream = await response.Content.ReadAsStreamAsync();
                 StreamReader readStream = new StreamReader(stream, Encoding.UTF8);

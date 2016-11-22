@@ -24,4 +24,9 @@ namespace BotFirst.Model
     {
         public string id { get; set; }
     }
+
+    public class PostResult
+    {
+        public string id { get; set; }
+    }
 }
