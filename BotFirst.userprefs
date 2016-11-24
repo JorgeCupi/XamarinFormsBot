@@ -1,0 +1,17 @@
+﻿<Properties StartupConfiguration="{357282E6-A856-4E18-84AC-BE0807990F4F}|Default">
+  <MonoDevelop.Ide.Workbench ActiveDocument="BotFirst/BotFirst.iOS/Main.cs">
+    <Files>
+      <File FileName="BotFirst/BotFirst/ViewModel/MainPageViewModel.cs" Line="141" Column="10" />
+      <File FileName="BotFirst/BotFirst/Model/GetClasses.cs" Line="35" Column="18" />
+      <File FileName="BotFirst/BotFirst.iOS/Main.cs" Line="17" Column="1" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|iPhoneSimulator" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MultiItemStartupConfigurations />
+  <MonoDevelop.Ide.ItemProperties.BotFirst.Droid PreferredExecutionTarget="Android.Android_Accelerated_x86" />
+  <MonoDevelop.Ide.ItemProperties.BotFirst.iOS PreferredExecutionTarget="MonoDevelop.IPhone.IPhoneSimulatorTarget.AEAE6A36-1463-4472-9C89-8DAE88B1111A" />
+</Properties>

@@ -17,15 +17,17 @@ namespace BotFirst.ViewModel
 {
     class MainPageViewModel : INotifyPropertyChanged
     {
-        #region Class properties
-        static HttpClient chatClient;
+		#region Class properties
+		static HttpClient chatClient;
         static HttpClient startConversationClient;
         static PostResult postResult;
         static ActivityToPost activityToPost;
-        static string botUriStartConversation;
+		static GetResult getResult;
+		static string botUriStartConversation;
         static string botUriChat;
         static string botSecret;
         static string activity;
+		static bool firstMessage;
         static MessageRequest messageRequest;
         static StringContent content;
         #endregion
@@ -77,10 +79,13 @@ namespace BotFirst.ViewModel
             myChat = new ObservableCollection<string>();
             myChat.CollectionChanged += MyChat_CollectionChanged;
             SendMessageCommand = new Command(SendMessage);
+			getResult = new GetResult();
+			firstMessage = true;
 
             botUriStartConversation = "https://directline.botframework.com/v3/directline/conversations/";
             botUriChat = "https://directline.botframework.com/v3/directline/conversations/{0}/activities";
-            botSecret = "Your-Bot-Secret-Goes-Here";
+            //botSecret = "Your-Bot-Secret-Goes-Here";
+			botSecret = "00lpHMa5tIU.cwA.3jM.FU2X7eHnLTLhwti165wVHmjYfYqrxghzUKD991lG2HI";
 
             chatClient = new HttpClient();
             startConversationClient = new HttpClient();
@@ -101,16 +106,28 @@ namespace BotFirst.ViewModel
         public async void SendMessage()
         {
             myChat.Add("Me: "+ myMessage);
-            // Posting an activity to Bot
-            postResult = JsonConvert.DeserializeObject<PostResult>(await PostAsync(botUriChat, content));
+			// Posting an activity to Bot
+			postResult = JsonConvert.DeserializeObject<PostResult>(await PostAsync(botUriChat, content));
             // if Bot succesfully received the message then it replies with an ID:
             if (postResult !=null)
             {
-                // Polling the Bot's reply with a GET request
-                GetResult getResult = JsonConvert.DeserializeObject<GetResult>(await chatClient.GetStringAsync(botUriChat));
+				// Polling the Bot's reply with a GET request
+				// The first time we make a GET request we don't have a watermark for the BOT to know which messages 
+				// are the latest in comparison to our last request so we don't send a watermark
+				if (firstMessage)
+				{
+					getResult = JsonConvert.DeserializeObject<GetResult>(await chatClient.GetStringAsync(botUriChat));
+					firstMessage = false;
+				}
+				// Now that we have a watermark we can send it so the Bot framework won't send the whole conversation history everytime 
+				// we make a GET request.
+				else
+					getResult = JsonConvert.DeserializeObject<GetResult>(await chatClient.GetStringAsync(botUriChat+"?watermark="+getResult.watermark));
 
-                // Just adding the last message from the whole list of activities
-                myChat.Add("Bot: " + getResult.activities[int.Parse(getResult.watermark) - 1].text);
+				// The BOT will return 2 activities instead of the whole conversation now that we are using watermarks.
+				// But why 2 and not just 1? That is because the message we sent wasn't part of the conversation yet since the last GET
+				// request we did, so both OUR message and the BOT's reply come as new activities in the latest GET.
+				myChat.Add("Bot: " + getResult.activities[1].text);
             }
             
         }
