@@ -84,8 +84,7 @@ namespace BotFirst.ViewModel
 
             botUriStartConversation = "https://directline.botframework.com/v3/directline/conversations/";
             botUriChat = "https://directline.botframework.com/v3/directline/conversations/{0}/activities";
-            //botSecret = "Your-Bot-Secret-Goes-Here";
-			botSecret = "00lpHMa5tIU.cwA.3jM.FU2X7eHnLTLhwti165wVHmjYfYqrxghzUKD991lG2HI";
+            botSecret = "Your-Bot-Secret-Goes-Here";
 
             chatClient = new HttpClient();
             startConversationClient = new HttpClient();
@@ -122,8 +121,10 @@ namespace BotFirst.ViewModel
 				// Now that we have a watermark we can send it so the Bot framework won't send the whole conversation history everytime 
 				// we make a GET request.
 				else
-					getResult = JsonConvert.DeserializeObject<GetResult>(await chatClient.GetStringAsync(botUriChat+"?watermark="+getResult.watermark));
-
+				{
+					string jsonResultFromBot = await chatClient.GetStringAsync(botUriChat + "?watermark=" + getResult.watermark);
+					getResult = JsonConvert.DeserializeObject<GetResult>(jsonResultFromBot);
+				}
 				// The BOT will return 2 activities instead of the whole conversation now that we are using watermarks.
 				// But why 2 and not just 1? That is because the message we sent wasn't part of the conversation yet since the last GET
 				// request we did, so both OUR message and the BOT's reply come as new activities in the latest GET.

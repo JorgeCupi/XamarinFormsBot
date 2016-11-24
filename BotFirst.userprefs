@@ -1,9 +1,10 @@
 ﻿<Properties StartupConfiguration="{357282E6-A856-4E18-84AC-BE0807990F4F}|Default">
-  <MonoDevelop.Ide.Workbench ActiveDocument="BotFirst/BotFirst.iOS/Main.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="BotFirst/BotFirst/ViewModel/MainPageViewModel.cs">
     <Files>
-      <File FileName="BotFirst/BotFirst/ViewModel/MainPageViewModel.cs" Line="141" Column="10" />
+      <File FileName="BotFirst/BotFirst/ViewModel/MainPageViewModel.cs" Line="123" Column="9" />
       <File FileName="BotFirst/BotFirst/Model/GetClasses.cs" Line="35" Column="18" />
       <File FileName="BotFirst/BotFirst.iOS/Main.cs" Line="17" Column="1" />
+      <File FileName="BotFirst/BotFirst/Model/PostClasses.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|iPhoneSimulator" />
