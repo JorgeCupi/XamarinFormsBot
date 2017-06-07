@@ -16,6 +16,7 @@ namespace BotFirst.View
             InitializeComponent();
             MainPageViewModel vm = new MainPageViewModel();
             this.BindingContext = vm;
+            lvChat.ItemAppearing += (sender, e) => lvChat.ScrollTo(vm.myChat.Last(), ScrollToPosition.MakeVisible, true); ;
         }
     }
 }

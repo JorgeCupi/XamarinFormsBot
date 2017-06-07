@@ -125,11 +125,29 @@ namespace BotFirst.ViewModel
 					string jsonResultFromBot = await chatClient.GetStringAsync(botUriChat + "?watermark=" + getResult.watermark);
 					getResult = JsonConvert.DeserializeObject<GetResult>(jsonResultFromBot);
 				}
-				// The BOT will return 2 activities instead of the whole conversation now that we are using watermarks.
-				// But why 2 and not just 1? That is because the message we sent wasn't part of the conversation yet since the last GET
-				// request we did, so both OUR message and the BOT's reply come as new activities in the latest GET.
-				myChat.Add("Bot: " + getResult.activities[1].text);
+                // The BOT will return 2 activities instead of the whole conversation now that we are using watermarks.
+                // But why 2 and not just 1? That is because the message we sent wasn't part of the conversation yet since the last GET
+                // request we did, so both OUR message and the BOT's reply come as new activities in the latest GET.
+                for (int i = 1; i < getResult.activities.Count; i++)
+                {
+                    if (getResult.activities[i].attachments.Count > 0)
+                    {                        
+                        foreach (var content in getResult.activities[i].attachments)
+                        {
+                            myChat.Add("Bot: " + content.content.text);
+                            foreach (var button in content.content.buttons)
+                            {
+                                myChat.Add("Bot: - " + button.title);
+                            }
+                        }
+                    } else 
+                    {
+                        myChat.Add("Bot: " + getResult.activities[i].text);
+                    }                    
+                }                
             }
+            
+            myMessage = string.Empty;
             
         }
         #endregion

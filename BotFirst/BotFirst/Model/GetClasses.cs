@@ -27,7 +27,7 @@ namespace BotFirst.Model
         public From from { get; set; }
         public Conversation conversation { get; set; }
         public string text { get; set; }
-        public List<object> attachments { get; set; }
+        public List<Attachment> attachments { get; set; }
         public List<object> entities { get; set; }
         public string replyToId { get; set; }
     }
@@ -36,6 +36,25 @@ namespace BotFirst.Model
     {
         public List<Activity> activities { get; set; }
         public string watermark { get; set; }
+    }
+
+    public class Attachment
+    {
+        public Content content { get; set; }
+    }
+
+    public class Content
+    {
+        public string title { get; set; }
+        public string text { get; set; }
+        public List<Button> buttons { get; set; }
+    }
+
+    public class Button
+    {
+        public string type { get; set; }
+        public string title { get; set; }
+        public string value { get; set; }
     }
 
 }
