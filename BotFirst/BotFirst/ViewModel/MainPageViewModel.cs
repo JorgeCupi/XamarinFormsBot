@@ -62,7 +62,8 @@ namespace BotFirst.ViewModel
                 {
                     type = "message",
                     from = new User { id = "user1" },
-                    text = myMessage
+                    text = myMessage,
+                    locale = "es-GT",
                 };
                 activity = JsonConvert.SerializeObject(activityToPost);
                 content = new StringContent(activity, Encoding.UTF8, "application/json");
@@ -84,7 +85,7 @@ namespace BotFirst.ViewModel
 
             botUriStartConversation = "https://directline.botframework.com/v3/directline/conversations/";
             botUriChat = "https://directline.botframework.com/v3/directline/conversations/{0}/activities";
-            botSecret = "Your-Bot-Secret-Goes-Here";
+            botSecret = "_mVKnEKCmM8.cwA.5XA.gSXRFS_SgSX3kWWJfHwnwXHodV5KwubNLqB4BXA5mN0";
 
             chatClient = new HttpClient();
             startConversationClient = new HttpClient();

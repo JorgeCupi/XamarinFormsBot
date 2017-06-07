@@ -19,6 +19,7 @@ namespace BotFirst.Model
         public string type { get; set; }
         public User from { get; set; }
         public string text { get; set; }
+        public string locale { get; set; }
     }
     public class User
     {
