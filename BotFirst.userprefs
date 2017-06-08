@@ -1,5 +1,5 @@
-﻿<Properties StartupConfiguration="{357282E6-A856-4E18-84AC-BE0807990F4F}|Default">
-  <MonoDevelop.Ide.Workbench ActiveDocument="BotFirst/BotFirst/ViewModel/MainPageViewModel.cs">
+﻿<Properties StartupConfiguration="{0DFCE0A9-020A-4C74-8190-63DE2A6220BD}|Default">
+  <MonoDevelop.Ide.Workbench ActiveDocument="XamarinFormsBot-Fork Status">
     <Files>
       <File FileName="BotFirst/BotFirst/ViewModel/MainPageViewModel.cs" Line="123" Column="9" />
       <File FileName="BotFirst/BotFirst/Model/GetClasses.cs" Line="35" Column="18" />
@@ -13,6 +13,6 @@
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MultiItemStartupConfigurations />
-  <MonoDevelop.Ide.ItemProperties.BotFirst.Droid PreferredExecutionTarget="Android.Android_Accelerated_x86" />
-  <MonoDevelop.Ide.ItemProperties.BotFirst.iOS PreferredExecutionTarget="MonoDevelop.IPhone.IPhoneSimulatorTarget.AEAE6A36-1463-4472-9C89-8DAE88B1111A" />
+  <MonoDevelop.Ide.ItemProperties.BotFirst.Droid PreferredExecutionTarget="Android.Nexus 4 (Marshmallow)" />
+  <MonoDevelop.Ide.ItemProperties.BotFirst.iOS PreferredExecutionTarget="MonoDevelop.IPhone.IPhoneSimulatorTarget.4BE21B94-099B-4C3E-83C1-BEACBACCCDB5" />
 </Properties>
